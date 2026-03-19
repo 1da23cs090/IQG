@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Question Generator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f0f9ff;
+        --card: #ffffff;
+        --ink: #0c1a2e;
+        --muted: #64748b;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        min-height: 100vh;
+        background-image:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(56, 189, 248, 0.18) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(34, 211, 238, 0.14) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 60% 30%,
+            rgba(167, 139, 250, 0.1) 0%,
+            transparent 40%
+          );
+        padding: 2rem 1rem 4rem;
+      }
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        animation: fadeDown 0.6s ease both;
+      }
+      .header h1 {
+        font-family: "Syne", sans-serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+      .header h1 .accent {
+        background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 24px;
+        padding: 2.25rem;
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.03),
+          0 8px 32px rgba(14, 165, 233, 0.08),
+          0 0 0 1px rgba(186, 230, 253, 0.6);
+        animation: fadeUp 0.65s ease both;
+        margin-bottom: 2rem;
+      }
+      .card-title {
+        font-family: "Syne", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #0ea5e9;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-title::before {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: linear-gradient(90deg, #38bdf8, #22d3ee);
+        border-radius: 2px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+      }
+      @media (max-width: 640px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+      }
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid #e0f2fe;
+        border-radius: 12px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        color: var(--ink);
+        background: #f8fbff;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 2.5rem;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .form-group select:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        background: #fff;
+      }
+
+      .difficulty-pills {
+        display: flex;
+        gap: 8px;
+      }
+      .pill-btn {
+        flex: 1;
+        padding: 0.6rem 0.5rem;
+        border: 2px solid #e0f2fe;
+        border-radius: 10px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s;
+        text-align: center;
+        background: #f8fbff;
+        color: var(--muted);
+      }
+      .pill-btn.easy {
+        --pc: #10b981;
+        --pb: #d1fae5;
+      }
+      .pill-btn.medium {
+        --pc: #f59e0b;
+        --pb: #fef3c7;
+      }
+      .pill-btn.hard {
+        --pc: #ef4444;
+        --pb: #fee2e2;
+      }
+      .pill-btn:hover,
+      .pill-btn.active {
+        background: var(--pb);
+        color: var(--pc);
+        border-color: var(--pc);
+      }
+      .pill-btn.active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .btn-generate {
+        width: 100%;
+        padding: 0.95rem;
+        background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-family: "Syne", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s;
+        box-shadow: 0 4px 20px rgba(14, 165, 233, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(14, 165, 233, 0.45);
+      }
+      .btn-generate:active {
+        transform: translateY(0);
+      }
+      .btn-generate:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-generate svg {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s;
+      }
+      .btn-generate:hover svg {
+        transform: rotate(15deg) scale(1.1);
+      }
+
+      /* LOADER - spinner only, absolutely no text */
+      .loader {
+        display: none;
+      }
+      .loader.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+      }
+      .loader-ring {
+        width: 44px;
+        height: 44px;
+        border: 3px solid #e0f2fe;
+        border-top-color: #0ea5e9;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        font-family: "Syne", sans-serif;
+      }
+      .badge.easy {
+        background: #d1fae5;
+        color: #059669;
+      }
+      .badge.medium {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .badge.hard {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .badge.domain {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+
+      .run-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.4s ease both;
+      }
+
+      .q-card {
+        background: var(--card);
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        box-shadow:
+          0 2px 12px rgba(14, 165, 233, 0.06),
+          0 0 0 1px rgba(186, 230, 253, 0.5);
+        overflow: hidden;
+        animation: fadeUp 0.4s ease both;
+        transition: box-shadow 0.2s;
+      }
+      .q-card:hover {
+        box-shadow:
+          0 4px 20px rgba(14, 165, 233, 0.12),
+          0 0 0 1px rgba(56, 189, 248, 0.4);
+      }
+      .q-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s;
+      }
+      .q-header:hover {
+        background: #f8fbff;
+      }
+      <!-- .q-num {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+      -- > .q-text {
+        flex: 1;
+        font-weight: 500;
+        color: var(--ink);
+        font-size: 0.97rem;
+        line-height: 1.5;
+        padding-top: 4px;
+      }
+      .q-toggle {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+        transition:
+          transform 0.25s,
+          background 0.2s;
+        color: #0ea5e9;
+      }
+      .q-card.open .q-toggle {
+        transform: rotate(180deg);
+        background: #e0f2fe;
+      }
+      .q-body {
+        display: none;
+        padding: 0 1.5rem 1.5rem;
+      }
+      .q-card.open .q-body {
+        display: block;
+      }
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #bae6fd, transparent);
+        margin: 0.75rem 0 0;
+      }
+      .q-section {
+        margin-top: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+      }
+      .q-section.answer-box {
+        background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+        border: 1px solid #a7f3d0;
+      }
+      .q-section.criteria-box {
+        background: linear-gradient(135deg, #fef9f0, #fffbeb);
+        border: 1px solid #fde68a;
+      }
+      .q-section-label {
+        font-family: "Syne", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .answer-box .q-section-label {
+        color: #059669;
+      }
+      .criteria-box .q-section-label {
+        color: #d97706;
+      }
+      .q-section-content {
+        font-size: 0.92rem;
+        color: #374151;
+        line-height: 1.7;
+      }
+
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Interview Question <span class="accent">Generator</span></h1>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Configure Your Session</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Job Domain</label>
+            <select id="domainSelect">
+              <option value="Web Development">Web Development</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Data Analysis">Data Analysis</option>
+              <option value="Machine Learning">Machine Learning</option>
+              <option value="DevOps & Cloud">DevOps &amp; Cloud</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Difficulty Level</label>
+            <div class="difficulty-pills">
+              <button class="pill-btn easy active" data-level="Easy">
+                Easy
+              </button>
+              <button class="pill-btn medium" data-level="Medium">
+                Medium
+              </button>
+              <button class="pill-btn hard" data-level="Hard">Hard</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-generate" id="genBtn" onclick="generate()">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Generate Questions
+        </button>
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="loader-ring"></div>
+      </div>
+
+      <div id="results"></div>
+    </div>
+    <script>
+      let difficulty = "Easy";
+
+      document.querySelectorAll(".pill-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".pill-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          difficulty = btn.dataset.level;
+        });
+      });
+
+      async function generate() {
+        const domain = document.getElementById("domainSelect").value;
+        const btn = document.getElementById("genBtn");
+        btn.disabled = true;
+        document.getElementById("loader").classList.add("active");
+        document.getElementById("results").innerHTML = "";
+
+        try {
+          const res = await fetch("/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ domain, difficulty }),
+          });
+          const data = await res.json();
+          document.getElementById("loader").classList.remove("active");
+          btn.disabled = false;
+          if (data.questions && data.questions.length > 0) {
+            render(data);
+          } else {
+            document.getElementById("results").innerHTML =
+              `<div style="text-align:center;padding:2rem;color:#64748b;">⚠️ No questions found. Try another domain or difficulty.</div>`;
+          }
+        } catch (err) {
+          document.getElementById("loader").classList.remove("active");
+          btn.disabled = false;
+          document.getElementById("results").innerHTML =
+            `<div style="text-align:center;padding:2rem;color:#ef4444;font-weight:600;">
+          ⚡ Cannot connect to Flask server.<br>
+          <span style="font-weight:400;color:#64748b;font-size:0.9rem;">
+            Run: <code style="background:#f1f5f9;padding:2px 8px;border-radius:6px;">python app.py</code>
+            then open <code style="background:#f1f5f9;padding:2px 8px;border-radius:6px;">http://localhost:5000</code>
+          </span>
+        </div>`;
+        }
+      }
+
+      function render(data) {
+        const diffClass = { Easy: "easy", Medium: "medium", Hard: "hard" };
+        let html = `
+      <div class="run-indicator">
+        <span class="badge ${diffClass[difficulty]}">${difficulty}</span>
+        <span class="badge domain">${data.questions[0].domain}</span>
+      </div>`;
+
+        data.questions.forEach((q, i) => {
+          html += `
+      <div class="q-card" style="animation-delay:${i * 0.06}s" onclick="this.classList.toggle('open')">
+        <div class="q-header">
+          <div class="q-text">${escHtml(q.question)}</div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+        <div class="q-body">
+          <div class="divider"></div>
+          <div class="q-section answer-box">
+            <div class="q-section-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+              Model Answer
+            </div>
+            <div class="q-section-content">${escHtml(q.answer)}</div>
+          </div>
+          <div class="q-section criteria-box">
+            <div class="q-section-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Evaluation Criteria
+            </div>
+            <div class="q-section-content">${escHtml(q.criteria)}</div>
+          </div>
+        </div>
+      </div>`;
+        });
+
+        document.getElementById("results").innerHTML = html;
+        document
+          .getElementById("results")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function escHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+  </body>
+</html>
