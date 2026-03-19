@@ -36,10 +36,9 @@ FORCE_SCRAPE = False          # set True to always scrape fresh
 SCRAPE_URLS = {
     "Web Development": {
         "Easy": [
+            "https://www.javatpoint.com/html-interview-questions",
+            "https://www.tutorialspoint.com/html/html_interview_questions.htm",
             "https://www.geeksforgeeks.org/html-interview-questions-answers/",
-            "https://www.geeksforgeeks.org/css-interview-questions-and-answers/",
-            "https://www.geeksforgeeks.org/top-50-javascript-interview-questions/",
-            "https://www.geeksforgeeks.org/commonly-asked-computer-networks-interview-questions/",
         ],
         "Medium": [
             "https://www.javatpoint.com/javascript-interview-questions",
@@ -81,10 +80,9 @@ SCRAPE_URLS = {
             "https://www.geeksforgeeks.org/python-interview-questions/",
         ],
         "Hard": [
+            "https://www.javatpoint.com/tableau-interview-questions",
+            "https://www.simplilearn.com/tutorials/tableau-tutorial/tableau-interview-questions",
             "https://www.geeksforgeeks.org/tableau-interview-questions/",
-            "https://www.geeksforgeeks.org/python-interview-questions/",
-            "https://www.geeksforgeeks.org/sql-interview-questions/",
-            "https://www.geeksforgeeks.org/commonly-asked-dbms-interview-questions/",
         ]
     },
     "Machine Learning": {
@@ -634,4 +632,4 @@ if __name__ == "__main__":
         print(f"  No cache yet — will scrape on first request")
     print("  Open: http://localhost:5000")
     print("=" * 50)
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False)
