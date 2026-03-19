@@ -24,10 +24,9 @@ HEADERS = {
 SCRAPE_URLS = {
     "Web Development": {
         "Easy": [
+            "https://www.javatpoint.com/html-interview-questions",
+            "https://www.tutorialspoint.com/html/html_interview_questions.htm",
             "https://www.geeksforgeeks.org/html-interview-questions-answers/",
-            "https://www.geeksforgeeks.org/css-interview-questions-and-answers/",
-            "https://www.geeksforgeeks.org/top-50-javascript-interview-questions/",
-            "https://www.geeksforgeeks.org/commonly-asked-computer-networks-interview-questions/",
         ],
         "Medium": [
             "https://www.javatpoint.com/javascript-interview-questions",
@@ -69,10 +68,9 @@ SCRAPE_URLS = {
             "https://www.geeksforgeeks.org/python-interview-questions/",
         ],
         "Hard": [
+            "https://www.javatpoint.com/tableau-interview-questions",
+            "https://www.simplilearn.com/tutorials/tableau-tutorial/tableau-interview-questions",
             "https://www.geeksforgeeks.org/tableau-interview-questions/",
-            "https://www.geeksforgeeks.org/python-interview-questions/",
-            "https://www.geeksforgeeks.org/sql-interview-questions/",
-            "https://www.geeksforgeeks.org/commonly-asked-dbms-interview-questions/",
         ]
     },
     "Machine Learning": {
@@ -131,7 +129,7 @@ def clean_question(text: str) -> str:
 
 
 def scrape(url: str) -> list:
-    """Scrape Q&A pairs from multiple website structures."""
+    """Scrape Q&A pairs from a GeeksforGeeks page."""
     results = []
     try:
         resp = requests.get(url, headers=HEADERS, timeout=15)
@@ -142,28 +140,10 @@ def scrape(url: str) -> list:
             "table of content", "introduction", "overview", "prerequisite",
             "conclusion", "summary", "faq", "related", "also read",
             "next article", "practice problem", "similar read", "advertisement",
-            "must read", "explore more", "like article",
-            "subscribe", "follow us", "share", "comment",
-            "previous", "next", "home", "tutorial"
+            "must read", "explore more", "like article"
         }
 
-        question_pattern = re.compile(
-            r'\?|what|how|explain|difference|define|describe|when|why|which|types|list|write|compare',
-            re.I
-        )
-
-        # ── Detect website and pick heading tags ──────────────────────────────
-        if "javatpoint.com" in url:
-            headings = soup.find_all(["h3", "h4"])
-        elif "tutorialspoint.com" in url:
-            headings = soup.find_all(["h2", "h3"])
-        elif "interviewbit.com" in url:
-            headings = soup.find_all(["h2", "h3", "h4"])
-        elif "simplilearn.com" in url:
-            headings = soup.find_all(["h2", "h3", "h4"])
-        else:
-            # GFG and others
-            headings = soup.find_all(["h2", "h3"])
+        headings = soup.find_all(["h2", "h3"])
 
         for h in headings:
             raw      = h.get_text(" ", strip=True)
@@ -171,10 +151,16 @@ def scrape(url: str) -> list:
 
             if not question or len(question) < 8:
                 continue
-            if not question_pattern.search(question):
+
+            if not re.search(
+                r'\?|what|how|explain|difference|define|describe|when|why|which|types|list|write|compare',
+                question, re.I
+            ):
                 continue
+
             if any(kw in question.lower() for kw in skip_kw):
                 continue
+
             if len(question) > 300:
                 continue
 
@@ -184,7 +170,7 @@ def scrape(url: str) -> list:
             for _ in range(8):
                 if sibling is None:
                     break
-                if sibling.name in ("h2", "h3", "h4"):
+                if sibling.name in ("h2", "h3"):
                     break
                 if sibling.name in ("p", "li", "blockquote"):
                     part = sibling.get_text(" ", strip=True)
@@ -194,10 +180,6 @@ def scrape(url: str) -> list:
                     items = [li.get_text(" ", strip=True)
                              for li in sibling.find_all("li")]
                     answer_parts.extend(items[:5])
-                elif sibling.name == "div":
-                    part = sibling.get_text(" ", strip=True)
-                    if part and len(part) > 15:
-                        answer_parts.append(part[:400])
                 sibling = sibling.find_next_sibling()
 
             if not answer_parts:
@@ -338,4 +320,4 @@ if __name__ == "__main__":
     print("  Interview Question Generator")
     print("  Open: http://localhost:5000")
     print("=" * 50)
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False)
